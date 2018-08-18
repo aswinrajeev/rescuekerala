@@ -102,12 +102,36 @@
 					.done(function(response) {
 						var inputElem = $('<input class="form-control" id="id_latlng_display" readonly="true" value="' + response.display_name + '"</input>');
 						$(gpsField).before(inputElem);
+						$(gpsField).before('<br/><div id="map" style="height: 300px; width: 500px;"></div>');
+						showInMap(pos);
 						$(gpsField).hide();
 						console.log(response.display_name);
 					})
 					.fail(function(err){
 						console.log(err);
 					});
+		}
+
+		var showInMap = function(pos) {
+			var crd = pos.coords;
+			var centr = {lat: crd.latitude, lng: crd.longitude};
+			var map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 14,
+				center: centr,
+				mapTypeId: 'satellite'
+			});
+			var area = new google.maps.Circle({
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.8,
+				strokeWeight: 2,
+				fillColor: '#FF0000',
+				fillOpacity: 0.25,
+				map: map,
+				center: centr,
+				radius: crd.accuracy
+			});
+
+			map.fitBounds(area.getBounds());
 		}
 
 		var error = function(err) {
